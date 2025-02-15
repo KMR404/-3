@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кое что для тебя❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #e94560;
+            --accent-color: #ff2e63;
+            --light-color: #eeeeee;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--light-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .scene {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+            padding: 20px;
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            to {
+                left: 100%;
+            }
+        }
+
+        .typing-text {
+            min-height: 60px;
+            margin: 20px 0;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .choice-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .choice-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .choice-button {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--light-color);
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-button:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .image-container {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .image-box {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+
+        .image-box:hover {
+            transform: rotateY(180deg);
+        }
+
+        .image-front,
+        .image-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .image-back {
+            transform: rotateY(180deg);
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .heart-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: var(--accent-color);
+            animation: float-down 3s linear;
+            opacity: 0;
+        }
+
+        @keyframes float-down {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: var(--accent-color);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 480px) {
+            .content-box {
+                padding: 20px;
+            }
+
+            .typing-text {
+                font-size: 16px;
+            }
+
+            .image-container {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart-rain" id="heartRain"></div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="scene active" id="scene1">
+        <div class="content-box">
+            <div class="typing-text" id="text1">
+                Привет! Я тут кое что сделал для тебя...
+                Надеюсь тебе понравиться 
+            </div>
+            <div class="choice-container" id="choices1">
+                <button class="choice-button" onclick="nextScene(2)">Что это? 👀</button>
+                <button class="choice-button" onclick="nextScene(2)">Интересно... 🤔</button>
+            </div>
+        </div>
+    </div>
+    
+        <div class="scene" id="scene2">
+        <div class="content-box">
+            <div class="image-container">
+                <div class="image-box">
+                    <div class="image-front">
+                        <img src="img\Airbrush-Image-Enhancer.jpg" alt="Фото" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="image-back">
+                        <p>Помнишь этот момент? 😊</p>
+                    </div>
+                </div>
+            </div>
+            <div class="typing-text" id="text2">
+                Знаешь, некоторые фотографии запоминаются надолго😊
+            </div>
+            <div class="choice-container" id="choices2">
+                <button class="choice-button" onclick="nextScene(3)">Продолжем</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene" id="scene3">
+        <div class="content-box">
+            <div class="image-container">
+                <div class="image-box">
+                    <div class="image-front">
+                        <img src="img\photo_2024-08-09_13-57-26.jpg" alt="Фото" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="image-back">
+                        <p>Помнишь этот момент? 😊</p>
+                    </div>
+                </div>
+            </div>
+            <div class="typing-text" id="text3">
+                Хотя не спорю, дурачусь тут больше я. И не скрываю этого😁
+            </div>
+            <div class="choice-container" id="choices3">
+                <button class="choice-button" onclick="nextScene(4)">Продолжем</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene" id="scene4">
+        <div class="content-box">
+            <div class="typing-text" id="text4">
+                Я так рад получать сообщения от тебя. Твоя улыбка делает мир ярче, а прогулки преображают мои дни.
+                Теперь я кажется понимаю, что значит чувствовать тепло на сердце, хах.
+                Во всяком случае, мои руки достаточно развязаны, что бы говорить что угодно, ты не осудишь. Спасибо за уделённое время!
+                Люблю тебя...
+            </div>
+            <div class="choice-container" id="choices4">
+                <button class="choice-button" onclick="showHeartRain()">❤️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function typeText(element, text, speed = 50) {
+            let index = 0;
+            element.textContent = '';
+            
+            return new Promise(resolve => {
+                function type() {
+                    if (index < text.length) {
+                        element.textContent += text[index];
+                        index++;
+                        setTimeout(type, speed);
+                    } else {
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        async function nextScene(sceneNumber) {
+            const currentScene = document.querySelector('.scene.active');
+            const nextScene = document.getElementById(`scene${sceneNumber}`);
+            const textElement = document.getElementById(`text${sceneNumber}`);
+            const choicesElement = document.getElementById(`choices${sceneNumber}`);
+            
+            currentScene.classList.remove('active');
+            nextScene.classList.add('active');
+            
+            const originalText = textElement.textContent;
+            textElement.textContent = '';
+            
+            await typeText(textElement, originalText);
+            choicesElement.classList.add('visible');
+            
+            updateProgress(sceneNumber);
+        }
+
+        function updateProgress(scene) {
+            const progressFill = document.getElementById('progressFill');
+            const totalScenes = 4;
+            const progress = (scene / totalScenes) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = `${Math.random() * 100}%`;
+            heart.style.fontSize = `${Math.random() * 20 + 10}px`;
+            
+            document.getElementById('heartRain').appendChild(heart);
+            
+            heart.addEventListener('animationend', () => heart.remove());
+        }
+
+        function showHeartRain() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(createHeart, i * 100);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const textElement = document.getElementById('text1');
+            const choicesElement = document.getElementById('choices1');
+            
+            const originalText = textElement.textContent;
+            textElement.textContent = '';
+            
+            await typeText(textElement, originalText);
+            choicesElement.classList.add('visible');
+            
+            updateProgress(1);
+        });
+
+        function createParticles() {
+            const particlesContainer = document.createElement('div');
+            particlesContainer.className = 'particles';
+            document.body.appendChild(particlesContainer);
+
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.width = `${Math.random() * 5 + 2}px`;
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+        });
+    </script>
+</body>
+</html>
